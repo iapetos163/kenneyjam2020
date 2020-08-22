@@ -1,5 +1,6 @@
 import panelingNE from './assets/world/paneling_NE.png';
 import panelingNW from './assets/world/paneling_NW.png';
+import floorFull from './assets/world/floorFull_NE.png';
 
 const ERR_NOT_READY = new Error('Cannot get image from AssetStore because it is not ready');
 
@@ -21,6 +22,7 @@ function loadImage(path: string, key: string): void {
 export async function load(): Promise<void> {
   loadImage(panelingNE, 'panelingNE');
   loadImage(panelingNW, 'panelingNW');
+  loadImage(floorFull, 'floorFull');
   await Promise.all(loadPromises);
   ready = true;
 }

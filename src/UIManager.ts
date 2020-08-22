@@ -4,10 +4,10 @@ import { load as loadAssets, get as getAsset } from './AssetStore';
 const GAME_WIDTH = 960;
 const GAME_HEIGHT = 640;
 
-function wallProject(x: number, y: number, z: number, xOriginOffset = 0): [number, number] {
+function wallProject(x: number, y: number, z: number, xOriginOffset: number, yOriginOffset: number): [number, number] {
   return [
     480 - xOriginOffset - (52 * x) + (52 * y),
-    320 - 64 - (61 * z) + (37 * (x + y))
+    320 - yOriginOffset - (61 * z) + (37 * (x + y))
   ];
 }
 
@@ -49,10 +49,10 @@ export default class UIManager {
   private renderWallNE(): void {
     const panelingNE = getAsset('panelingNE');
 
-    for (let x = 0; x < 6; x++) {
+    for (let x = 0; x < 4; x++) {
       for (let z = 0; z < 3; z++) {
-        const [pX, pZ] = wallProject(x, 0, z, 55);
-        this.ctx.drawImage(panelingNE, pX, pZ);
+        const [pX, pY] = wallProject(x, -1, z, 3, 64 - 37);
+        this.ctx.drawImage(panelingNE, pX, pY);
       }
     }
   }
@@ -60,10 +60,23 @@ export default class UIManager {
   private renderWallNW(): void {
     const panelingNE = getAsset('panelingNW');
 
-    for (let y = 0; y < 6; y++) {
+    for (let y = 0; y < 4; y++) {
       for (let z = 0; z < 3; z++) {
-        const [pY, pZ] = wallProject(0, y, z);
-        this.ctx.drawImage(panelingNE, pY, pZ);
+        const [pX, pY] = wallProject(-1, y, z, 52, 64 - 37);
+        this.ctx.drawImage(panelingNE, pX, pY);
+      }
+    }
+  }
+
+  private renderFloor(): void {
+    const floorFull = getAsset('floorFull'); // 6 104
+    for (let x = 0, y = 0; x < 8; x = y) {
+      for (y = 0; x >= 0; (x -= 2), (y += 2)) {
+        console.log(x, y);
+        if (x < 4 && y < 4) {
+          const [pX, pY] = wallProject(x, y, 0, 104, 6);
+          this.ctx.drawImage(floorFull, pX, pY);
+        }
       }
     }
   }
@@ -80,6 +93,8 @@ export default class UIManager {
     loadAssets().then(() => {
       this.renderWallNE();
       this.renderWallNW();
+      this.renderFloor();
+
       this.loadingLayer.active = false;
     }).catch(err => {
       const message = err?.message;
