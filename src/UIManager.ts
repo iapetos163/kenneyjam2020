@@ -1,19 +1,31 @@
+import Loading from './Loading';
+
 export default class UIManager {
-  private readonly game: HTMLDivElement;
+  private readonly gameElem: HTMLDivElement;
+  private readonly errorElem = document.createElement('p');
+  private readonly loadingLayer: Loading;
   private updatePending = false;
   private errored = false;
-  private error = document.createElement('p');
 
   constructor(game: HTMLDivElement) {
-    this.game = game;
-    game.appendChild(this.error);
-    this.error.setAttribute('style', 'color: darkred;');
-    console.log('appended child!!!');
+    this.gameElem = game;
+
+    this.errorElem.setAttribute('id', 'error');
+    game.appendChild(this.errorElem);
+
+    this.loadingLayer = new Loading(game);
+  }
+
+  private fail(reason: string): void {
+    this.errored = true;
+    this.errorElem.innerText = reason;
   }
 
   public draw(): void {
-    if (this.updatePending && !this.errored) {
-      this.updatePending = false;
+    if (!this.errored) {
+      if (!this.loadingLayer.active && this.updatePending) {
+        this.updatePending = false;
+      }
     }
   }
 
@@ -25,10 +37,7 @@ export default class UIManager {
     if (ctx == null) {
       this.fail('Failed create 2D context');
     }
-  }
 
-  private fail(reason: string): void {
-    this.errored = true;
-    this.error.innerText = reason;
+    this.loadingLayer.active = false;
   }
 }
