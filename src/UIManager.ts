@@ -1,4 +1,5 @@
 import Loading from './Loading';
+import { load as loadAssets } from './AssetStore';
 
 export default class UIManager {
   private readonly gameElem: HTMLDivElement;
@@ -31,13 +32,22 @@ export default class UIManager {
 
   public init(): void {
     const canvas = document.createElement('canvas');
-
     const ctx = canvas.getContext('2d');
 
     if (ctx == null) {
       this.fail('Failed create 2D context');
+      return;
     }
 
-    this.loadingLayer.active = false;
+    loadAssets().then(() => {
+      this.loadingLayer.active = false;
+    }).catch(err => {
+      const message = err?.message;
+      if (message === undefined) {
+        this.fail(message);
+      } else {
+        this.fail(err);
+      }
+    });
   }
 }

@@ -23,6 +23,7 @@ module.exports = {
   },
   rules: {
     "@typescript-eslint/space-before-function-paren": "off",
-    "@typescript-eslint/semi": ["warn", "always"]
+    "@typescript-eslint/semi": ["warn", "always"],
+    "@typescript-eslint/array-type": ["warn", {default: "array"}]
   }
 }
